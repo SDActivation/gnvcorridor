@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
   $s('scenario-download').addEventListener('click',()=>{
     const items=[...saved,{name:'Il tuo piano attuale',scenario:capture()}];
     const payload={schemaVersion:'2.0',synthetic:true,assumptions:'Domanda sintetica, memoria media per canale, capacità settimanale 35%, risposta esponenziale. Effetti oltre fine anno esclusi.',scenarios:items.map(r=>({...r,results:evaluateScenario(r.scenario,costBenchmarks)}))};
-    const url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='GNV_confronto_scenari_sintetici.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);
+    const url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='cliente_Ferry_confronto_scenari_sintetici.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);
   });
   state.scenario.demandProfile='base';state.scenario.demandDestination='ALL';refresh();
 });
