@@ -15,10 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const sim = result.simulation;
     $s('simulation-destination').value = sim.destination;
     $s('demand-profile').value = sim.profile;
-    $s('simulation-summary').textContent = `${GNVSimulation.profiles[sim.profile].label} · ${sim.destination === 'ALL' ? 'Tutto il Maghreb' : sim.destination} · ${sim.year}: ${fmt.format(sim.organicDemand)} ricerche organiche sintetiche + ${fmt.format(result.incrementalSearches)} da media · ${sim.horizon}.`;
+    if ($s('planner-demand-profile')) $s('planner-demand-profile').value = sim.profile;
+    $s('simulation-summary').textContent = `${GNVSimulation.profiles[sim.profile].label} · ${sim.year}: ${fmt.format(sim.organicDemand)} ricerche senza campagna e ${fmt.format(result.incrementalSearches)} ricerche aggiuntive nella simulazione.`;
     const body = $s('simulation-weeks');body.replaceChildren();
-    sim.weekly.forEach(w=>{ const tr=document.createElement('tr'); [ `W${String(w.week).padStart(2,'0')}`,`${fmt.format(w.budget)} €`,fmt.format(w.organicDemand),fmt.format(w.incrementalSearches),fmt.format(w.totalDemand),fmt.format(w.quotes)].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.append(td)});body.append(tr); });
-    if (window.Chart && !chart) chart = new Chart($s('simulation-chart'),{type:'line',data:{labels:[],datasets:[{label:'Domanda organica sintetica',data:[],borderColor:'#839caf',borderDash:[5,4],pointRadius:0,tension:.25},{label:'Domanda con media simulata',data:[],borderColor:'#003b71',backgroundColor:'#003b7115',fill:'-1',pointRadius:0,tension:.25}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:true,position:'bottom'},tooltip:{callbacks:{label:item=>`${item.dataset.label}: ${fmt.format(item.raw)}`}}},scales:{y:{beginAtZero:true,title:{display:true,text:'Ricerche / settimana'}},x:{ticks:{maxTicksLimit:13}}}}});
+    sim.weekly.forEach(w=>{ const tr=document.createElement('tr'); [ `Sett. ${String(w.week).padStart(2,'0')}`,`${fmt.format(w.budget)} €`,fmt.format(w.organicDemand),fmt.format(w.incrementalSearches),fmt.format(w.totalDemand),fmt.format(w.quotes)].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.append(td)});body.append(tr); });
+    if (window.Chart && !chart) chart = new Chart($s('simulation-chart'),{type:'line',data:{labels:[],datasets:[{label:'Senza campagna',data:[],borderColor:'#839caf',borderDash:[5,4],pointRadius:0,tension:.25},{label:'Con la campagna (simulazione)',data:[],borderColor:'#003b71',backgroundColor:'#003b7115',fill:'-1',pointRadius:0,tension:.25}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:true,position:'bottom'},tooltip:{callbacks:{label:item=>`${item.dataset.label}: ${fmt.format(item.raw)}`}}},scales:{y:{beginAtZero:true,title:{display:true,text:'Ricerche / settimana'}},x:{ticks:{maxTicksLimit:13}}}}});
     if(chart){chart.data.labels=sim.weekly.map(w=>`W${w.week}`);chart.data.datasets[0].data=sim.weekly.map(w=>w.organicDemand);chart.data.datasets[1].data=sim.weekly.map(w=>w.totalDemand);chart.update('none');}
     const selected=Object.entries(presets).find(([,v])=>costBenchmarks.every((b,i)=>state.scenario.channelShares[b.channel]===v.shares[i]));
     document.querySelectorAll('[data-mix]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mix===selected?.[0])));
@@ -26,29 +27,29 @@ document.addEventListener('DOMContentLoaded', () => {
   function refresh() { invalidateExport();updatePlanner();updateComparison(); }
   function updateComparison() {
     const body=$s('scenario-comparison');body.replaceChildren();
-    const current=capture(), rows=[...saved,{name:'Scenario corrente',scenario:current}];
+    const current=capture(), rows=[...saved,{name:'Il tuo piano attuale',scenario:current}];
     const base=evaluateScenario(rows[0].scenario,costBenchmarks);
     for(const [i,row] of rows.entries()){
       const r=evaluateScenario(row.scenario,costBenchmarks), sc=row.scenario;
       const tr=document.createElement('tr');
       const delta=base.incrementalSearches>0?`${decimal.format((r.incrementalSearches/base.incrementalSearches-1)*100)}%`:'n.d.';
-      [row.name,`${fmt.format(sc.budget)} €`,GNVSimulation.profiles[sc.demandProfile].label,sc.demandDestination,`W${sc.startWeek}–W${sc.endWeek}`,`${fmt.format(r.impressions/1000)} mila`,fmt.format(r.incrementalSearches),fmt.format(r.quotes),i===0?'Riferimento':delta].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.append(td)});
+      [row.name,`${fmt.format(sc.budget)} €`,GNVSimulation.profiles[sc.demandProfile].label,({ALL:'Tutto il Maghreb',MA:'Marocco',TN:'Tunisia',DZ:'Algeria'}[sc.demandDestination]),`Sett. ${sc.startWeek}–${sc.endWeek}`,`${fmt.format(r.impressions/1000)} mila`,fmt.format(r.incrementalSearches),fmt.format(r.quotes),i===0?'Riferimento':delta].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.append(td)});
       const td=document.createElement('td');
-      if(i<saved.length){const b=document.createElement('button');b.className='btn btn-outline';b.textContent='Carica';b.addEventListener('click',()=>{state.scenario=clone(sc);state.manualBaseline=null;state.suggested=false;$s('simulation-destination').value=sc.demandDestination;$s('demand-profile').value=sc.demandProfile;GNVSimulation.setProfile(sc.demandProfile);updateFilters();refresh();});td.append(b);}
+      if(i<saved.length){const b=document.createElement('button');b.className='btn btn-outline';b.textContent='Usa questo piano';b.addEventListener('click',()=>{state.scenario=clone(sc);state.manualBaseline=null;state.suggested=false;$s('simulation-destination').value=sc.demandDestination;$s('demand-profile').value=sc.demandProfile;GNVSimulation.setProfile(sc.demandProfile);updateFilters();refresh();});td.append(b);}
       tr.append(td);body.append(tr);
     }
     $s('scenario-save').disabled=saved.length>=4;
-    $s('scenario-compare-note').textContent=saved.length?'Delta rispetto al primo scenario salvato. Domanda e destinazione diverse cambiano il contesto del confronto. Scenari conservati solo in questa sessione.':'Salva uno scenario come riferimento, poi modifica budget, mix o calendario. Puoi confrontare fino a quattro scenari salvati e quello corrente.';
+    $s('scenario-compare-note').textContent=saved.length?'La variazione è rispetto al primo piano salvato. Per un confronto più chiaro, mantieni uguali domanda e destinazione. I piani si cancellano quando ricarichi la pagina.':'Salva il primo piano, poi cambia una scelta alla volta. Qui vedrai fino a quattro piani salvati e quello che stai modificando.';
   }
   window.GNVScenarios={render:r=>{render(r);updateComparison();}};
   $s('tab-planner').addEventListener('click',()=>requestAnimationFrame(()=>chart?.resize()));
-  $s('demand-profile').addEventListener('change',e=>{GNVSimulation.setProfile(e.target.value);state.scenario.demandProfile=e.target.value;state.manualBaseline=null;state.suggested=false;updateFilters();refresh();});
+  for(const id of ['demand-profile','planner-demand-profile']) $s(id)?.addEventListener('change',e=>{GNVSimulation.setProfile(e.target.value);state.scenario.demandProfile=e.target.value;state.manualBaseline=null;state.suggested=false;updateFilters();refresh();});
   $s('simulation-destination').addEventListener('change',e=>{state.scenario.demandDestination=e.target.value;refresh();});
   document.querySelectorAll('[data-mix]').forEach(b=>b.addEventListener('click',()=>{markManual();state.scenario.channelShares=Object.fromEntries(costBenchmarks.map((c,i)=>[c.channel,presets[b.dataset.mix].shares[i]]));refresh();}));
-  $s('scenario-save').addEventListener('click',()=>{if(saved.length>=4)return; const name=$s('scenario-name').value.trim()||`Scenario ${saved.length+1}`;saved.push({name,scenario:capture()});$s('scenario-name').value='';updateComparison();});
+  $s('scenario-save').addEventListener('click',()=>{if(saved.length>=4)return; const name=$s('scenario-name').value.trim()||`Piano ${saved.length+1}`;saved.push({name,scenario:capture()});$s('scenario-name').value='';updateComparison();});
   $s('scenario-clear').addEventListener('click',()=>{saved=[];updateComparison();});
   $s('scenario-download').addEventListener('click',()=>{
-    const items=[...saved,{name:'Scenario corrente',scenario:capture()}];
+    const items=[...saved,{name:'Il tuo piano attuale',scenario:capture()}];
     const payload={schemaVersion:'2.0',synthetic:true,assumptions:'Domanda sintetica, memoria media per canale, capacità settimanale 35%, risposta esponenziale. Effetti oltre fine anno esclusi.',scenarios:items.map(r=>({...r,results:evaluateScenario(r.scenario,costBenchmarks)}))};
     const url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='GNV_confronto_scenari_sintetici.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);
   });
