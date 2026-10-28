@@ -3,17 +3,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const guide = document.getElementById('usage-guide');
   const trigger = document.getElementById('open-guide');
   const steps = [
-    { label: 'Corridoio', title: '1. Scegli il corridoio da esplorare', text: 'Parti da Demand Radar. Seleziona la destinazione e il mercato sorgente: grafico e confronto Ferry vs Flight si aggiornano sul corridoio scelto. Il cluster territoriale filtra soltanto i punti della mappa.', tip: 'Da provare: Marocco come destinazione e Francia come mercato. Tutti i numeri della demo sono sintetici.', tab: 'radar', target: '.filters', action: 'Vai ai filtri' },
-    { label: 'Quando', title: '2. Osserva quando nasce la domanda', text: 'Sposta il cursore delle settimane oppure premi Play. L’opacità dei punti segue l’intensità stagionale; il raggio indica un indice illustrativo, non un numero di persone. Confronta poi la domanda 2025 e 2026 sotto la mappa.', tip: 'Gennaio–maggio è la finestra di decisione assunta dal modello; giugno–settembre è la finestra di viaggio. Le settimane mancanti non valgono zero.', tab: 'radar', target: '.time-control', action: 'Esplora il calendario' },
-    { label: 'Budget', title: '3. Costruisci il tuo scenario', text: 'Apri Corridor Planner, imposta il budget e distribuiscilo fra mercati e canali. Scegli il periodo di attivazione e osserva i risultati stimati. Le ripartizioni mantengono sempre il totale al 100%.', tip: 'Il profilo di domanda scelto nel Radar aggiorna la simulazione. Nel Planner scegli la destinazione, prova un mix e salva gli scenari per confrontarli. I mercati del piano restano indipendenti dai filtri del Radar.', tab: 'planner', target: '.planner-toolbar', action: 'Imposta il budget' },
-    { label: 'Confronto', title: '4. Confronta la tua allocazione', text: 'Premi “Suggerisci allocazione” per applicare i pesi territoriali e temporali dichiarati. Il tuo scenario manuale viene conservato e puoi ripristinarlo. Il suggerimento mantiene budget, mix canali e intervallo di date.', tip: 'La risposta cambia con domanda settimanale, memoria dei canali e saturazione locale. Il suggerimento è una regola euristica, non garantisce un miglioramento. Consulta “Come lo calcoliamo” per le formule.', tab: 'planner', target: '#suggest-allocation', action: 'Vai al confronto' },
-    { label: 'Esporta', title: '5. Porta lo scenario nella discussione', text: 'Usa “Esporta scenario” per scaricare JSON e CSV con allocazioni, ipotesi e risultati. I link restano disponibili sotto i comandi. Condividi sempre le assunzioni insieme alle stime.', tip: 'Le quote sono richieste di preventivo, non vendite. Prima di usare i numeri per decisioni operative, sostituisci i dati sintetici e valida i benchmark.', tab: 'planner', target: '#export-scenario', action: 'Vai all’esportazione' }
+    { label: 'Dove', title: '1. Scegli dove guardare', text: 'In “Esplora la domanda” scegli la destinazione del viaggio e il paese di partenza. La mappa mostra i territori e il grafico mostra le ricerche nel tempo.', tip: 'Per iniziare, prova Marocco e Francia. I numeri sono inventati per questa demo.', tab: 'radar', target: '.filters', action: 'Scegli i paesi' },
+    { label: 'Quando', title: '2. Guarda come cambia l’anno', text: 'Sposta il cursore delle settimane oppure premi il pulsante di riproduzione. I punti diventano più o meno visibili in base alle ricerche della settimana.', tip: 'Un cerchio grande indica un indice alto, non un numero di persone. Nel modello, gennaio–maggio è il periodo principale per aiutare a scegliere.', tab: 'radar', target: '.time-control', action: 'Prova il calendario' },
+    { label: 'Budget', title: '3. Prova un piano', text: 'In “Crea il tuo piano” scegli la destinazione, una combinazione di canali e il budget. Poi indica quando vuoi comunicare. I risultati si aggiornano mentre fai le tue scelte.', tip: 'Vuoi modificare ogni percentuale? Apri “Vuoi personalizzare il piano?”. I filtri della mappa non cambiano i paesi del piano.', tab: 'planner', target: '.planner-toolbar', action: 'Imposta il budget' },
+    { label: 'Confronta', title: '4. Confronta due idee', text: 'Salva il tuo primo piano. Poi cambia budget, canali o periodo e confronta la nuova versione con quella salvata. Puoi anche provare il suggerimento e tornare al tuo piano.', tip: 'I piani salvati restano disponibili finché non ricarichi la pagina. Scarica il confronto se vuoi conservarli.', tab: 'planner', target: '#scenario-save', action: 'Salva un piano' },
+    { label: 'Scarica', title: '5. Conserva il risultato', text: 'Premi “Scarica il piano” per ottenere i file con le tue scelte e le stime. Oppure scarica il confronto tra i piani che hai salvato.', tip: 'I preventivi non sono prenotazioni. Condividi questi risultati come esempi di simulazione, insieme alle ipotesi usate.', tab: 'planner', target: '#export-scenario', action: 'Scarica il piano' }
   ];
   let current = 0;
   let highlighted = null;
   const $ = id => document.getElementById(id);
   function clearHighlight() { highlighted?.classList.remove('guide-focus'); highlighted = null; }
-  function showStep(index) {
+  function showStep(index, navigate = true) {
     current = index;
     clearHighlight();
     const step = steps[current];
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (i === current) button.setAttribute('aria-current', 'step');
       else button.removeAttribute('aria-current');
     });
-    document.getElementById(`tab-${step.tab}`).click();
+    if (navigate) document.getElementById(`tab-${step.tab}`).click();
   }
   function closeGuide() {
     guide.hidden = true;
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const focusable = highlighted.matches('button,input,select') ? highlighted : highlighted.querySelector('button,input,select');
     focusable?.focus({ preventScroll: true });
   });
-  try { guide.hidden = localStorage.getItem('gnv-guide-v1-dismissed') === '1'; } catch { guide.hidden = false; }
+  guide.hidden = true;
   trigger.setAttribute('aria-expanded', String(!guide.hidden));
-  showStep(0);
+  showStep(0, false);
 }, { once: true });
