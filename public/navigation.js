@@ -1,9 +1,11 @@
 /* Navigazione con URL condivisibili e cronologia del browser. */
 document.addEventListener('DOMContentLoaded', () => {
-  const hashes={home:'#inizia',radar:'#domanda',planner:'#piano'};
-  const titles={radar:['Esplora la domanda','Scegli una destinazione e scopri come cambiano le ricerche durante l’anno.'],planner:['Crea il tuo piano','Scegli quanto investire, prova una combinazione di canali e confronta i risultati.']};
+  const hashes={home:'#inizia',radar:'#domanda',planner:'#piano',data:'#dati'};
+  const titles={data:['Dati necessari','Cosa raccogliere per passare dalla demo a uno strumento di lavoro.'],radar:['Esplora la domanda','Scegli una destinazione e scopri come cambiano le ricerche durante l’anno.'],planner:['Crea il tuo piano','Scegli quanto investire, prova una combinazione di canali e confronta i risultati.']};
   function sync(view) {
     document.body.dataset.view=view;
+    const dataPanel = document.getElementById('panel-data');
+    if (dataPanel) dataPanel.hidden = view !== 'data';
     document.querySelectorAll('[data-site-view]').forEach(link=>{
       if(link.dataset.siteView===view)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');
     });
@@ -15,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   function navigate(view,scroll=true) {
     if(!Object.hasOwn(hashes,view))view='home';
-    if(view==='home') {stopPlayback();sync(view);} else switchTab(view);
+    if(view==='home' || view==='data') {stopPlayback();sync(view);} else switchTab(view);
     if(scroll){window.scrollTo({top:0,behavior:'auto'});const heading=document.getElementById(view==='home'?'page-title':'view-title');heading.focus({preventScroll:true});}
   }
   window.GNVSite={sync,navigate};
