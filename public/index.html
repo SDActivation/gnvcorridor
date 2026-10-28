@@ -2035,6 +2035,7 @@ const defaultDecisionWeeks = Array.from({ length: isoWeeksInYear(latestYear) }, 
 const DEFAULT_SCENARIO = { budget: 500000, marketShares: { FR: 45, IT: 20, ES: 20, BE: 8, DE: 7 }, channelShares: defaultChannelShares, quoteRate: 0.03, year: latestYear, startWeek: defaultDecisionWeeks[0], endWeek: defaultDecisionWeeks.at(-1), weekWeights: null };
 const state = { source: 'ALL', destination: 'ALL', cluster: 'ALL', year: latestYear, week: availableWeeks.get(latestYear)?.has(16) ? 16 : 1, tab: 'radar', playing: false, scenario: clone(DEFAULT_SCENARIO), manualBaseline: null, suggested: false };
 let map, countriesLayer, markerLayer, destinationLayer;
+let mapResizeObserver, mapResizeFrame;
 let markers = [];
 let demandChart, marketChart, weeklyChart;
 let animationTimer = null, toastTimer = null;
@@ -2073,6 +2074,9 @@ function seasonalMultiplier(source, destination, year, week) {
 
 // Disegno neutro con geografie incorporate. Non dipende da tile server.
 function initMap() {
+  const container = $('map');
+  // Leaflet deve misurare un contenitore visibile prima di calcolare zoom e centro.
+  if (map || !container.clientWidth || !container.clientHeight) return;
   if (!window.L) { $('map').innerHTML = '<div class="dep-fallback"><div><strong>La mappa attende Leaflet.</strong>Connetti il dispositivo a Internet e ricarica il file.<br>I dati del prototipo sono già incorporati.</div></div>'; return; }
   map = L.map('map', { zoomControl: false, scrollWheelZoom: false, attributionControl: true, zoomSnap: 0.25, zoomDelta: 0.5, minZoom: 3, maxZoom: 10, preferCanvas: false, maxBounds: [[24, -27], [63, 34]], maxBoundsViscosity: 0.6 });
   map.attributionControl.setPrefix(false);
@@ -2085,6 +2089,17 @@ function initMap() {
   markerLayer = L.layerGroup().addTo(map); destinationLayer = L.layerGroup().addTo(map);
   map.on('zoomend', () => { const labelPane = map.getPane('labels'); if (labelPane) labelPane.style.opacity = map.getZoom() > 6.5 ? '0' : '1'; });
   fitMap(); rebuildMarkers();
+  if (typeof ResizeObserver !== 'undefined') {
+    mapResizeObserver = new ResizeObserver(() => {
+      cancelAnimationFrame(mapResizeFrame);
+      mapResizeFrame = requestAnimationFrame(() => {
+        if (!container.clientWidth || !container.clientHeight || $('panel-radar').hidden) return;
+        map.invalidateSize({ animate: false, pan: false });
+        fitMap();
+      });
+    });
+    mapResizeObserver.observe(container);
+  }
 }
 function countryStyle(code) {
   const isMarket = Object.hasOwn(MARKET_NAMES, code), isDestination = Object.hasOwn(DEST_NAMES, code);
@@ -2092,7 +2107,7 @@ function countryStyle(code) {
   const activeDestination = isDestination && (state.destination === 'ALL' || state.destination === code);
   return { color: '#C3D0DC', weight: 0.8, fillColor: activeMarket ? '#F7FAFD' : activeDestination ? '#D9E5EF' : '#EFF3F6', fillOpacity: 1 };
 }
-function fitMap() { if (map) map.fitBounds([[31.8, -11], [54.4, 17]], { padding: [12, 15], animate: false }); }
+function fitMap() { if (map && $('map').clientWidth && $('map').clientHeight) map.fitBounds([[31.8, -11], [54.4, 17]], { padding: [12, 15], animate: false }); }
 function cityTooltip(city, multiplier) {
   const factor = multiplier === null ? 'Nessun dato settimanale' : `${df.format(multiplier)}× · indice ${nf.format(city.searchIntensity * multiplier)}`;
   return `<b>${escapeHTML(city.city)} <span style="font-weight:500;font-size:9px">${escapeHTML(city.country)}</span></b><div class="tip-grid"><span>Indice diaspora</span><strong>${city.diasporaIndex} / 100</strong><span>Intensità ricerca · base</span><strong>${city.searchIntensity} / 100</strong><span>Trend</span><strong>${TREND_LABELS[city.trend]}</strong><span>Cluster</span><strong>${escapeHTML(city.cluster)}</strong><span>Intensità stagionale</span><strong>${factor}</strong></div><div class="tip-note">Indici illustrativi, non conteggi di persone.</div>`;
@@ -2245,7 +2260,7 @@ function switchTab(name) {
   window.GNVSite?.sync(name);
   state.tab = name; if (name !== 'radar') stopPlayback();
   for (const tab of ['radar', 'planner']) { const active = tab === name; $(`tab-${tab}`).setAttribute('aria-selected', String(active)); $(`tab-${tab}`).tabIndex = active ? 0 : -1; $(`panel-${tab}`).hidden = !active; }
-  requestAnimationFrame(() => { if (name === 'radar') { if (map) map.invalidateSize({ animate: false }); if (demandChart) demandChart.resize(); } else { if (!marketChart && window.Chart) initPlannerCharts(); if (marketChart) marketChart.resize(); if (weeklyChart) weeklyChart.resize(); updatePlannerCharts(); } });
+  requestAnimationFrame(() => { if (name === 'radar') { initMap(); if (map) map.invalidateSize({ animate: false, pan: false }); if (demandChart) demandChart.resize(); } else { if (!marketChart && window.Chart) initPlannerCharts(); if (marketChart) marketChart.resize(); if (weeklyChart) weeklyChart.resize(); updatePlannerCharts(); } });
 }
 function buildAllocationControls() {
   const makeRow = (key, label, kind, index) => {
