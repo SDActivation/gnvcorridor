@@ -1636,16 +1636,24 @@ const costBenchmarks = [
     @media(max-width:800px){.gnv-logo{width:88px;height:38px;padding:8px}.header-right{gap:12px}}
     @media(max-width:520px){.gnv-logo{width:70px;height:33px;padding:7px}.header-tag{display:none}.topbar{gap:8px}}
   </style>
+  <link rel="stylesheet" href="/gnv-ui.css">
+  <script defer src="/guide.js"></script>
 </head>
 <body>
   <a class="skip" href="#main">Vai al contenuto</a>
   <header class="topbar">
-    <div class="brand"><svg class="brand-icon" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="none" stroke="currentColor" stroke-width=".8" opacity=".45"/><path d="M24 7 34 36 24 30 14 36Z" fill="white"/><path d="M24 7V30L14 36Z" fill="#E30017"/><path d="M24 1V5M24 43V47M1 24H5M43 24H47" stroke="currentColor" stroke-width="1.2"/></svg><div><div class="brand-title">GNV Return Corridor Navigator</div><div class="brand-sub">Prototipo — dati illustrativi</div></div></div>
-    <div class="header-right"><span class="header-tag">THE RETURN CORRIDOR</span><a class="gnv-logo" href="https://www.gnv.it/it/" target="_blank" rel="noopener noreferrer" aria-label="GNV — Grandi Navi Veloci, sito ufficiale"><img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/GNV_logo.svg" alt="GNV — Grandi Navi Veloci" width="512" height="140" decoding="async"></a></div>
+    <div class="brand"><a class="gnv-logo" href="https://www.gnv.it/it/" target="_blank" rel="noopener noreferrer" aria-label="GNV — Grandi Navi Veloci, sito ufficiale"><img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/GNV_logo.svg" alt="GNV — Grandi Navi Veloci" width="512" height="140" decoding="async"></a><svg class="brand-icon" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="none" stroke="currentColor" stroke-width=".8" opacity=".45"/><path d="M24 7 34 36 24 30 14 36Z" fill="white"/><path d="M24 7V30L14 36Z" fill="#E30017"/><path d="M24 1V5M24 43V47M1 24H5M43 24H47" stroke="currentColor" stroke-width="1.2"/></svg><div><div class="brand-title">GNV Return Corridor Navigator</div><div class="brand-sub">Prototipo — dati illustrativi</div></div></div>
+    <div class="header-right"><button type="button" class="help-trigger" id="open-guide" aria-controls="usage-guide" aria-expanded="true">Guida all’uso</button><span class="header-tag">THE RETURN CORRIDOR</span></div>
   </header>
   <div class="workspace">
     <main id="main" class="main">
       <section class="intro" aria-labelledby="page-title"><div><div class="eyebrow"><span class="red-line"></span>The Return Corridor / Europa → Maghreb</div><h1 id="page-title">La rotta si sceglie prima di partire.</h1><p class="intro-copy">Auto, famiglia, bagagli. Per chi torna a casa, il viaggio comincia mesi prima.<br>Costruiamo la scelta nella finestra in cui nasce: da gennaio a maggio.</p></div><div class="route-seal"><div class="route-top">UNA ROTTA, DUE TEMPI</div><div class="route-line">Scegliere <span style="font-weight:400;color:#93A5B7">→</span> partire</div><small>Gennaio–maggio &nbsp; / &nbsp; Giugno–settembre</small></div></section>
+      <section class="usage-guide" id="usage-guide" aria-labelledby="guide-title" style="scroll-margin-top:120px">
+        <div class="guide-top"><span class="guide-kicker">Il tuo percorso · 5 passaggi</span><button type="button" class="guide-close" id="guide-close">Chiudi guida ×</button></div>
+        <ol class="guide-steps" id="guide-steps" aria-label="Passaggi della guida"></ol>
+        <div aria-live="polite" aria-atomic="true"><h2 class="guide-title" id="guide-title" tabindex="-1">Da dove cominciare?</h2><p class="guide-copy" id="guide-copy">Esplora il corridoio nel Demand Radar, poi costruisci e confronta uno scenario nel Corridor Planner.</p><p class="guide-tip" id="guide-tip">Dati e risultati sono illustrativi.</p></div>
+        <div class="guide-actions"><button type="button" class="btn btn-outline" id="guide-prev">Indietro</button><button type="button" class="btn btn-outline" id="guide-target">Vai ai filtri</button><button type="button" class="btn btn-primary" id="guide-next">Continua →</button><span class="guide-count" id="guide-count">1 di 5</span></div>
+      </section>
       <nav class="tabs" role="tablist" aria-label="Moduli del navigatore"><button class="tab" id="tab-radar" role="tab" aria-selected="true" aria-controls="panel-radar"><span class="tab-no">01</span>Demand Radar</button><button class="tab" id="tab-planner" role="tab" aria-selected="false" aria-controls="panel-planner" tabindex="-1"><span class="tab-no">02</span>Corridor Planner</button><span class="tabs-meta"><span class="status-dot"></span><span id="data-status">Orizzonte 2025–2026</span></span></nav>
       <div id="dependency-notice" class="notice" role="status" hidden></div>
       <section id="panel-radar" role="tabpanel" aria-labelledby="tab-radar">
