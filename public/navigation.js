@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     if(titles[view]){document.getElementById('view-title').textContent=titles[view][0];document.getElementById('view-description').textContent=titles[view][1];}
     document.getElementById('view-heading').hidden=view==='home';
-    const heading=view==='home'?'GNV · Il viaggio comincia dalla scelta':`GNV · ${titles[view][0]}`;
+    const heading=view==='home'?'cliente Ferry · Il viaggio comincia dalla scelta':`cliente Ferry · ${titles[view][0]}`;
     document.title=heading;
     if(location.hash!==hashes[view])history.pushState({view},'',hashes[view]);
   }
