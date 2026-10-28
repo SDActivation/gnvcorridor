@@ -1629,13 +1629,19 @@ const costBenchmarks = [
     @media(min-width:1600px){.topbar{height:76px}.workspace{padding-top:24px}.intro{margin-bottom:18px}h1{font-size:34px;margin:10px 0 8px}.intro-copy{font-size:12px;line-height:1.5}.tabs{margin-bottom:16px}.tab{padding-top:10px;padding-bottom:13px}.filters{padding:12px 20px}.field select{height:34px}.field label{margin-bottom:6px}.map{height:320px}.time-control{padding:12px 20px 9px}.season-spark{height:24px}.time-foot{padding-bottom:10px}.chartbox{height:210px}.sidebar{top:96px;max-height:calc(100dvh - 112px)}}
     @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
     @media print{.topbar{position:static}.workspace{display:block}.sidebar{position:static;max-height:none;display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.play-btn,.planning-actions,.tabs,.map-controls{display:none}.card{break-inside:avoid}.footer{font-size:8px}}
+    /* Marchio GNV: riproduzione attribuita a Grandi Navi Veloci, fonte https://commons.wikimedia.org/wiki/File:GNV_logo.svg */
+    .gnv-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:118px;height:46px;padding:9px 11px;background:#fff;border-radius:5px}
+    .gnv-logo img{display:block;width:100%;height:auto;object-fit:contain}
+    .gnv-logo:focus-visible{outline:3px solid #fff;outline-offset:4px}
+    @media(max-width:800px){.gnv-logo{width:88px;height:38px;padding:8px}.header-right{gap:12px}}
+    @media(max-width:520px){.gnv-logo{width:70px;height:33px;padding:7px}.header-tag{display:none}.topbar{gap:8px}}
   </style>
 </head>
 <body>
   <a class="skip" href="#main">Vai al contenuto</a>
   <header class="topbar">
     <div class="brand"><svg class="brand-icon" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="none" stroke="currentColor" stroke-width=".8" opacity=".45"/><path d="M24 7 34 36 24 30 14 36Z" fill="white"/><path d="M24 7V30L14 36Z" fill="#E30017"/><path d="M24 1V5M24 43V47M1 24H5M43 24H47" stroke="currentColor" stroke-width="1.2"/></svg><div><div class="brand-title">GNV Return Corridor Navigator</div><div class="brand-sub">Prototipo — dati illustrativi</div></div></div>
-    <div class="header-right"><span class="header-tag">THE RETURN CORRIDOR</span><div class="logo-placeholder" aria-label="Spazio per logo GNV"><b>GNV</b><span>SPAZIO LOGO</span></div></div>
+    <div class="header-right"><span class="header-tag">THE RETURN CORRIDOR</span><a class="gnv-logo" href="https://www.gnv.it/it/" target="_blank" rel="noopener noreferrer" aria-label="GNV — Grandi Navi Veloci, sito ufficiale"><img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/GNV_logo.svg" alt="GNV — Grandi Navi Veloci" width="512" height="140" decoding="async"></a></div>
   </header>
   <div class="workspace">
     <main id="main" class="main">
