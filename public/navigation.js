@@ -1,7 +1,7 @@
 /* Navigazione con URL condivisibili e cronologia del browser. */
 document.addEventListener('DOMContentLoaded', () => {
   const hashes={home:'#inizia',radar:'#domanda',planner:'#piano',data:'#dati'};
-  const titles={data:['Dati necessari','Cosa raccogliere per passare dalla demo a uno strumento di lavoro.'],radar:['Esplora la domanda','Scegli una destinazione e scopri come cambiano le ricerche durante l’anno.'],planner:['Crea il tuo piano','Scegli quanto investire, prova una combinazione di canali e confronta i risultati.']};
+  const titles={data:['Dati necessari','Dati di partenza nordafricani, pubblici, tratte e media locali: cosa serve per lavorare davvero.'],radar:['Esplora la domanda','Da Marocco, Tunisia e Algeria verso l’Europa: esplora le ricerche settimanali simulate.'],planner:['Crea il tuo piano','Distribuisci il budget nei tre paesi nordafricani, scegli canali e periodo e confronta i risultati.']};
   function sync(view) {
     document.body.dataset.view=view;
     const dataPanel = document.getElementById('panel-data');
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     if(titles[view]){document.getElementById('view-title').textContent=titles[view][0];document.getElementById('view-description').textContent=titles[view][1];}
     document.getElementById('view-heading').hidden=view==='home';
-    const heading=view==='home'?'cliente Ferry · Il viaggio comincia dalla scelta':`cliente Ferry · ${titles[view][0]}`;
+    const heading=view==='home'?'cliente Ferry · Nord Africa → Europa':`cliente Ferry · ${titles[view][0]}`;
     document.title=heading;
     if(location.hash!==hashes[view])history.pushState({view},'',hashes[view]);
   }

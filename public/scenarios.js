@@ -4,10 +4,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const decimal = new Intl.NumberFormat('it-IT',{maximumFractionDigits:1});
   let saved = [], chart;
   const presets = {
-    balanced:{label:'Equilibrato',shares:[25,25,20,12,10,8]},
-    awareness:{label:'Notorietà',shares:[40,25,10,15,5,5]},
-    digital:{label:'Video e social',shares:[10,35,35,5,10,5]},
-    community:{label:'Territorio e community',shares:[10,15,15,30,10,20]}
+    balanced:{label:'Equilibrato',shares:[10,25,35,10,10,10]},
+    awareness:{label:'Notorietà',shares:[25,30,20,10,10,5]},
+    digital:{label:'Video e social',shares:[0,35,45,5,10,5]},
+    community:{label:'Territorio e community',shares:[0,15,30,25,10,20]}
   };
   function capture() { return {...clone(state.scenario),demandProfile:GNVSimulation.activeProfile,demandDestination:$s('simulation-destination').value}; }
   function render(result) {
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const r=evaluateScenario(row.scenario,costBenchmarks), sc=row.scenario;
       const tr=document.createElement('tr');
       const delta=base.incrementalSearches>0?`${decimal.format((r.incrementalSearches/base.incrementalSearches-1)*100)}%`:'n.d.';
-      [row.name,`${fmt.format(sc.budget)} €`,GNVSimulation.profiles[sc.demandProfile].label,({ALL:'Tutto il Maghreb',MA:'Marocco',TN:'Tunisia',DZ:'Algeria'}[sc.demandDestination]),`Sett. ${sc.startWeek}–${sc.endWeek}`,`${fmt.format(r.impressions/1000)} mila`,fmt.format(r.incrementalSearches),fmt.format(r.quotes),i===0?'Riferimento':delta].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.append(td)});
+      [row.name,`${fmt.format(sc.budget)} €`,GNVSimulation.profiles[sc.demandProfile].label,({ALL:'Europa',FR:'Francia',IT:'Italia',ES:'Spagna'}[sc.demandDestination]),`Sett. ${sc.startWeek}–${sc.endWeek}`,`${fmt.format(r.impressions/1000)} mila`,fmt.format(r.incrementalSearches),fmt.format(r.quotes),i===0?'Riferimento':delta].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.append(td)});
       const td=document.createElement('td');
       if(i<saved.length){const b=document.createElement('button');b.className='btn btn-outline';b.textContent='Usa questo piano';b.addEventListener('click',()=>{state.scenario=clone(sc);state.manualBaseline=null;state.suggested=false;$s('simulation-destination').value=sc.demandDestination;$s('demand-profile').value=sc.demandProfile;GNVSimulation.setProfile(sc.demandProfile);updateFilters();refresh();});td.append(b);}
       tr.append(td);body.append(tr);
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
   $s('scenario-clear').addEventListener('click',()=>{saved=[];updateComparison();});
   $s('scenario-download').addEventListener('click',()=>{
     const items=[...saved,{name:'Il tuo piano attuale',scenario:capture()}];
-    const payload={schemaVersion:'2.0',synthetic:true,assumptions:'Domanda sintetica, memoria media per canale, capacità settimanale 35%, risposta esponenziale. Effetti oltre fine anno esclusi.',scenarios:items.map(r=>({...r,results:evaluateScenario(r.scenario,costBenchmarks)}))};
+    const payload={schemaVersion:'3.0',direction:'Nord Africa → Europa',audience:'Da distinguere per residenza e motivo del viaggio',calendarAssumption:'Fattore 1 per tutte le settimane',synthetic:true,assumptions:'Nuove serie sintetiche Nord Africa → Europa, nove coppie paese/paese non equivalenti a tratte operate; calendario neutro, memoria canale e capacità 35% illustrative. Effetti oltre fine anno esclusi.',scenarios:items.map(r=>({...r,results:evaluateScenario(r.scenario,costBenchmarks)}))};
     const url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='cliente_Ferry_confronto_scenari_sintetici.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);
   });
   state.scenario.demandProfile='base';state.scenario.demandDestination='ALL';refresh();

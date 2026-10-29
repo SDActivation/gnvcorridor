@@ -1,17 +1,8 @@
-/* Modello dimostrativo v2: dati inventati, deterministici e riproducibili. */
+/* Modello dimostrativo v3 — Nord Africa → Europa: dati inventati, deterministici e riproducibili. */
 (function () {
   const profiles = { low: { label: 'Domanda debole', factor: .78 }, base: { label: 'Scenario base', factor: 1 }, high: { label: 'Domanda sostenuta', factor: 1.22 } };
   const baseline = new Map(demandData.map(r => [`${r.source}|${r.destination}|${r.week}`, { ...r }]));
-  // Completamento esplicito delle settimane 2026 non presenti nel prototipo.
-  for (const source of ['FR','IT','ES','BE','DE']) for (const destination of ['MA','TN','DZ']) {
-    for (let week = 45; week <= 53; week++) {
-      const prior = baseline.get(`${source}|${destination}|2025-${String(Math.min(52, week)).padStart(2,'0')}`);
-      const change = -.18 + .04 * Math.sin(week * .57 + source.charCodeAt(0));
-      const row = { ...prior, source, destination, week: `2026-${week}`, searchVolume: Math.round(prior.searchVolume * (1 + change)), yoyFerry: change, yoyFlight: -.05, syntheticExtension: true };
-      demandData.push(row); baseline.set(`${source}|${destination}|${row.week}`, { ...row });
-    }
-  }
-  const api = { profiles, activeProfile: 'base' };
+  const api = { profiles, activeProfile: 'base', volumeForProfile: profileVolume };
   function profileVolume(row, profile) {
     const original = baseline.get(`${row.source}|${row.destination}|${row.week}`);
     if (!original) return 0;
@@ -59,7 +50,7 @@
         const volume = demand.get(`${market}|${week}`) || 0;
         organic += volume;
         const factors = {};
-        const timing = weekPhase(scenario.year,week) === 'decision' ? 1 : .45;
+        const timing = 1; // Nessun vantaggio di calendario validato su questa direttrice.
         for (const b of benchmarks) {
           const budget = (allocation?.budget || 0) * Math.max(0,scenario.marketShares[market])/marketSum * Math.max(0,scenario.channelShares[b.channel] || 0)/channelSum;
           const direct = budget / b.cpm * 1000 / 3 / 1000 * b.searchLiftPerMilleReach * timing;
@@ -81,7 +72,7 @@
     return { ...result, incrementalSearches, quotes: incrementalSearches*scenario.quoteRate,
       byChannel:result.byChannel.map(r=>({...r,incrementalSearches:channelIncrements[r.channel]})),
       byMarket:result.byMarket.map(r=>({...r,incrementalSearches:marketIncrements[r.source],quotes:marketIncrements[r.source]*scenario.quoteRate})),
-      simulation:{ version:2, synthetic:true, profile, destination, year:scenario.year, capacityShare:.35, carry, organicDemand, totalDemand:organicDemand+incrementalSearches, weekly, horizon:`W01–W${maxWeek}`, note:'Domanda inventata; saturazione esponenziale e memoria media illustrative. Nessun forecast validato. Effetti oltre la fine dell’anno esclusi.' }
+      simulation:{ version:3, synthetic:true, direction:'Nord Africa → Europa', calendarMultiplier:1, audience:'Da qualificare', profile, destination, year:scenario.year, capacityShare:.35, carry, organicDemand, totalDemand:organicDemand+incrementalSearches, weekly, horizon:`W01–W${maxWeek}`, note:'Nord Africa → Europa: domanda inventata; nessuna finestra decisionale validata; saturazione e memoria illustrative. Nessun forecast validato. Effetti oltre la fine dell’anno esclusi.' }
     };
   };
   window.GNVSimulation = api;
