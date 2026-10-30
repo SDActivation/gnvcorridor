@@ -1,0 +1,8 @@
+{
+  "name": "corridor-navigator",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node tests/northbound.cjs && node --test tests/demo-access.test.mjs"
+  }
+}

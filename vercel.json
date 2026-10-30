@@ -1,5 +1,14 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "outputDirectory": "public"
+  "outputDirectory": "public",
+  "functions": {
+    "api/demo.mjs": {
+      "includeFiles": "demo-content/**",
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    { "source": "/:path*", "destination": "/api/demo?asset=:path*" }
+  ]
 }

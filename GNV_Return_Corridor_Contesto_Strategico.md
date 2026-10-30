@@ -55,11 +55,11 @@ Impression = budget / CPM × 1.000; copertura lorda = impression / 3. I coeffici
 4. Bacini geografici locali e layer documentati con copertura verificata; un precedente layer europeo non dimostra copertura nel Nord Africa.
 5. Campagne storiche della stessa direttrice e misurazioni dedicate per calibrare il modello.
 
-Ricerche, preventivi e prenotazioni sono eventi distinti. Dati mancanti non diventano zero. Non servono nomi o email dei clienti. La pagina pubblica «Dati necessari» è una checklist, non un caricamento o un archivio di dati commerciali.
+Ricerche, preventivi e prenotazioni sono eventi distinti. Dati mancanti non diventano zero. Non servono nomi o email dei clienti. La pagina «Dati necessari» è una checklist, non un caricamento o un archivio di dati commerciali.
 
 ## Verifica e limiti
 
-`node tests/northbound.cjs` controlla perimetro, dati, default, neutralità del calendario, conservazione del budget, somme per mercato e canale, saturazione, profili, suggerimento, filtri, export v3 e snapshot. La verifica del codice e dei dati non sostituisce la prova visuale e delle interazioni in un browser reale.
+`npm test` controlla perimetro, dati, default, neutralità del calendario, conservazione del budget, somme per mercato e canale, saturazione, profili, suggerimento, filtri, export v3 e snapshot. La verifica del codice e dei dati non sostituisce la prova visuale e delle interazioni in un browser reale.
 
 ## Fonti e stato delle evidenze
 

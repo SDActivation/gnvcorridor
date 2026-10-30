@@ -1,12 +1,12 @@
 const fs = require('fs');
 const vm = require('vm');
 const assert = require('assert/strict');
-const html = fs.readFileSync('public/index.html', 'utf8');
+const html = fs.readFileSync('demo-content/index.html', 'utf8');
 const script = id => html.match(new RegExp(`<script id="${id}">([\\s\\S]*?)</script>`))[1];
 const context = { document: { addEventListener() {} }, matchMedia: () => ({ matches: true }), console };
 context.window = context;
 vm.createContext(context);
-for (const code of [script('illustrative-data'), fs.readFileSync('public/simulation.js', 'utf8'), script('pure-calculations'), script('inline-cartography'), script('navigator-app')]) vm.runInContext(code, context);
+for (const code of [script('illustrative-data'), fs.readFileSync('demo-content/simulation.js', 'utf8'), script('pure-calculations'), script('inline-cartography'), script('navigator-app')]) vm.runInContext(code, context);
 const run = code => vm.runInContext(code, context);
 const close = (actual, expected) => assert(Math.abs(actual - expected) < 1e-6, `${actual} != ${expected}`);
 const snapshot = run(`(() => {const scenario=clone(DEFAULT_SCENARIO);return {scenario,errors:validateInputs(demandData,geoData,costBenchmarks),rows:demandData.length,geo:geoData.length,sources:[...new Set(demandData.map(r=>r.source))],destinations:[...new Set(demandData.map(r=>r.destination))],geoCountries:[...new Set(geoData.map(r=>r.country))],base:evaluateScenario(scenario,costBenchmarks),zero:evaluateScenario({...scenario,budget:0},costBenchmarks),double:evaluateScenario({...scenario,budget:scenario.budget*2},costBenchmarks),high:evaluateScenario({...scenario,demandProfile:'high'},costBenchmarks),low:evaluateScenario({...scenario,demandProfile:'low'},costBenchmarks),fr:evaluateScenario({...scenario,demandDestination:'FR'},costBenchmarks),suggested:suggestAllocation(scenario,geoData),exported:createScenarioExport(scenario,costBenchmarks,null,{source:'ALL',destination:'ALL',cluster:'ALL'})};})()`);
